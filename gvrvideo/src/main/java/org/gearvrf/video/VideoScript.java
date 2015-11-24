@@ -182,6 +182,8 @@ public class VideoScript extends GVRScript
             mHeadTracker.getRenderData().setDepthTest(false);
             mHeadTracker.getRenderData().setRenderingOrder(100000);
             mainScene.getMainCameraRig().addChildObject(mHeadTracker);
+            mHeadTracker.getRenderData().setRenderMask(
+                    GVRRenderMaskBit.Left | GVRRenderMaskBit.Right);
 
             /*
              * FXGear Background
@@ -264,7 +266,6 @@ public class VideoScript extends GVRScript
             /*
              * Screen
              */
-
             GVRMesh screenMesh = gvrContext.loadMesh(new GVRAndroidResource(
                     mGVRContext, "theater1/screen.obj"));
             GVRRenderData renderDataL = new GVRRenderData(gvrContext);
@@ -1200,16 +1201,6 @@ public class VideoScript extends GVRScript
             {
                 mTransitionTarget = 1.0f - mTransitionTarget;
             }
-        }
-
-        if (!mIsUIHidden || mIsGlobalMenuOn)
-        {
-            mHeadTracker.getRenderData().setRenderMask(
-                    GVRRenderMaskBit.Left | GVRRenderMaskBit.Right);
-        }
-        else
-        {
-            mHeadTracker.getRenderData().setRenderMask(0);
         }
 
         if (!isUIHiden && isSingleTapped && !isAnythingPointed)
