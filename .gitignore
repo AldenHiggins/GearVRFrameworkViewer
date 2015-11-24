@@ -12,3 +12,4 @@ gradlew
 *.bat
 import-summary.txt
 gvrvideo/src/main/res/drawable-xxxhdpi/gearvr_logo.jpg
+gvrvideo/src/main/res/drawable-xxxhdpi/logo.png
