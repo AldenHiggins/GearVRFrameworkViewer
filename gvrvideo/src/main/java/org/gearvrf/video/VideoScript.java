@@ -37,7 +37,8 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.Surface;
 
-public class VideoScript extends GVRScript {
+public class VideoScript extends GVRScript
+{
 
     private static final String TAG = "VideoScript";
 
@@ -124,18 +125,22 @@ public class VideoScript extends GVRScript {
 
     private GVRActivity mActivity;
 
-    VideoScript(GVRActivity activity) {
+    VideoScript(GVRActivity activity)
+    {
         mActivity = activity;
     }
 
     @Override
-    public void onInit(GVRContext gvrContext) {
+    public void onInit(GVRContext gvrContext)
+    {
         mGVRContext = gvrContext;
 
-        GVRScene mainScene = gvrContext.getNextMainScene(new Runnable() {
+        GVRScene mainScene = gvrContext.getNextMainScene(new Runnable()
+        {
 
             @Override
-            public void run() {
+            public void run()
+            {
                 mMediaPlayer.start();
             }
         });
@@ -154,7 +159,8 @@ public class VideoScript extends GVRScript {
         mMediaPlayer.setLooping(true);
 
         AssetFileDescriptor afd;
-        try {
+        try
+        {
             afd = gvrContext.getContext().getAssets().openFd("tron.mp4");
             mMediaPlayer.setDataSource(afd.getFileDescriptor(),
                     afd.getStartOffset(), afd.getLength());
@@ -394,7 +400,9 @@ public class VideoScript extends GVRScript {
 
             mainScene.addSceneObject(mCinema[1]);
             for (int i = 0; i < mCinema[1].getChildrenCount(); i++)
+            {
                 mCinema[1].getChildByIndex(i).getRenderData().setRenderMask(0);
+            }
 
             /*
              * Buttons
@@ -637,11 +645,11 @@ public class VideoScript extends GVRScript {
             globalBatteryInsideRoot.getTransform().setScale(1.02f, 0.60f, 1.0f);
             mGlobalMenuRoot.addChildObject(globalBatteryInsideRoot);
 
-            Bitmap bitmap = Bitmap.createBitmap(new int[] { 0xff37e420 }, 1, 1,
+            Bitmap bitmap = Bitmap.createBitmap(new int[]{0xff37e420}, 1, 1,
                     Config.ARGB_8888);
             mGlobalBatteryInside = new GVRSceneObject(gvrContext,
                     gvrContext.createQuad(1.0f, 1.0f), new GVRBitmapTexture(
-                            gvrContext, bitmap));
+                    gvrContext, bitmap));
             mGlobalBatteryInside.getRenderData().setDepthTest(false);
             mGlobalBatteryInside.getRenderData().setRenderingOrder(
                     GVRRenderingOrder.TRANSPARENT + 5001);
@@ -665,7 +673,9 @@ public class VideoScript extends GVRScript {
             mCameraSurfaceTexture = new SurfaceTexture(
                     passThroughTexture.getId());
             mainScene.getMainCameraRig().addChildObject(mPassThroughObject);
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             e.printStackTrace();
             mActivity.finish();
             Log.e(TAG, "Assets were not loaded. Stopping application!");
@@ -676,8 +686,13 @@ public class VideoScript extends GVRScript {
         mActivity = null;
     }
 
+
+    /////////////////////////////////////////////////////////////////////////////
+    //////////////////////////  UPDATE FUNCTION  ////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////
     @Override
-    public void onStep() {
+    public void onStep()
+    {
         FPSCounter.tick();
         mVideoSurfaceTexture.updateTexImage();
 
@@ -686,27 +701,39 @@ public class VideoScript extends GVRScript {
         mTransitionWeight += step * (mTransitionTarget - mTransitionWeight);
         mFadeWeight += 0.01f * (mFadeTarget - mFadeWeight);
 
-        if (mIsPassThrough) {
+        if (mIsPassThrough)
+        {
             mCameraSurfaceTexture.updateTexImage();
             mMediaPlayer.pause();
             mFadeWeight = 0.0f;
             for (int i = 0; i < mCinema[0].getChildrenCount(); i++)
+            {
                 mCinema[0].getChildByIndex(i).getRenderData().setRenderMask(0);
+            }
             for (int i = 0; i < mCinema[1].getChildrenCount(); i++)
+            {
                 mCinema[1].getChildByIndex(i).getRenderData().setRenderMask(0);
+            }
             mIsUIHidden = true;
-        } else {
-            if (mCurrentCinema == 0) {
+        }
+        else
+        {
+            if (mCurrentCinema == 0)
+            {
                 for (int i = 0; i < mCinema[1].getChildrenCount(); i++)
+                {
                     mCinema[1].getChildByIndex(i).getRenderData()
                             .setRenderMask(0);
+                }
                 for (int i = 0; i < mCinema[0].getChildrenCount(); i++)
+                {
                     mCinema[0]
                             .getChildByIndex(i)
                             .getRenderData()
                             .setRenderMask(
                                     GVRRenderMaskBit.Left
                                             | GVRRenderMaskBit.Right);
+                }
 
                 mLeftSceneObject
                         .getRenderData()
@@ -724,17 +751,23 @@ public class VideoScript extends GVRScript {
                         .setFloat(RadiosityShader.LIGHT_KEY, 2.0f);
                 mRightSceneObject.getRenderData().getMaterial()
                         .setFloat(RadiosityShader.LIGHT_KEY, 2.0f);
-            } else {
+            }
+            else
+            {
                 for (int i = 0; i < mCinema[0].getChildrenCount(); i++)
+                {
                     mCinema[0].getChildByIndex(i).getRenderData()
                             .setRenderMask(0);
+                }
                 for (int i = 0; i < mCinema[1].getChildrenCount(); i++)
+                {
                     mCinema[1]
                             .getChildByIndex(i)
                             .getRenderData()
                             .setRenderMask(
                                     GVRRenderMaskBit.Left
                                             | GVRRenderMaskBit.Right);
+                }
 
                 mOculusSceneObject1
                         .getRenderData()
@@ -752,7 +785,8 @@ public class VideoScript extends GVRScript {
         }
 
         float scale = 1.0f + 1.0f * (mTransitionWeight - 1.0f);
-        if (scale >= 1.0f) {
+        if (scale >= 1.0f)
+        {
             mButtonBoard.getTransform().setScale(scale, scale, 1.0f);
             mButtonBoard.getTransform().setPosition(-0.1f,
                     -0.6f - 0.26f * scale, -8.0f);
@@ -776,7 +810,8 @@ public class VideoScript extends GVRScript {
         boolean isUIHiden = mIsUIHidden;
         boolean isAnythingPointed = false;
 
-        if (!mIsUIHidden) {
+        if (!mIsUIHidden)
+        {
             mPlayPauseButton.getRenderData().setRenderMask(
                     GVRRenderMaskBit.Left | GVRRenderMaskBit.Right);
             mFrontButton.getRenderData().setRenderMask(
@@ -797,7 +832,8 @@ public class VideoScript extends GVRScript {
             mImaxButton.getEyePointeeHolder().setEnable(true);
             mSelectButton.getEyePointeeHolder().setEnable(true);
 
-            if (pickedHolders == null) {
+            if (pickedHolders == null)
+            {
                 pickedHolders = GVRPicker.pickScene(mGVRContext.getMainScene());
             }
 
@@ -809,136 +845,193 @@ public class VideoScript extends GVRScript {
             Float seekbarRatio = mSeekbar.getRatio(mGVRContext.getMainScene()
                     .getMainCameraRig().getLookAt());
 
-            for (GVREyePointeeHolder holder : pickedHolders) {
-                if (holder.equals(mPlayPauseButton.getEyePointeeHolder())) {
+            for (GVREyePointeeHolder holder : pickedHolders)
+            {
+                if (holder.equals(mPlayPauseButton.getEyePointeeHolder()))
+                {
                     playPausePointed = true;
-                } else if (holder.equals(mFrontButton.getEyePointeeHolder())) {
+                }
+                else if (holder.equals(mFrontButton.getEyePointeeHolder()))
+                {
                     frontPointed = true;
-                } else if (holder.equals(mBackButton.getEyePointeeHolder())) {
+                }
+                else if (holder.equals(mBackButton.getEyePointeeHolder()))
+                {
                     backPointed = true;
-                } else if (holder.equals(mImaxButton.getEyePointeeHolder())) {
+                }
+                else if (holder.equals(mImaxButton.getEyePointeeHolder()))
+                {
                     imaxPointed = true;
-                } else if (holder.equals(mSelectButton.getEyePointeeHolder())) {
+                }
+                else if (holder.equals(mSelectButton.getEyePointeeHolder()))
+                {
                     selectPointed = true;
                 }
             }
 
             if (playPausePointed || frontPointed || backPointed || imaxPointed
-                    || selectPointed || seekbarRatio != null) {
+                    || selectPointed || seekbarRatio != null)
+            {
                 isAnythingPointed = true;
             }
 
-            if (playPausePointed) {
-                if (isSingleTapped) {
-                    if (mMediaPlayer.isPlaying()) {
+            if (playPausePointed)
+            {
+                if (isSingleTapped)
+                {
+                    if (mMediaPlayer.isPlaying())
+                    {
                         mMediaPlayer.pause();
-                    } else {
+                    }
+                    else
+                    {
                         mMediaPlayer.start();
                     }
                 }
             }
 
-            if (mMediaPlayer.isPlaying()) {
-                if (playPausePointed) {
+            if (mMediaPlayer.isPlaying())
+            {
+                if (playPausePointed)
+                {
                     mPlayPauseButton.getRenderData().getMaterial()
                             .setMainTexture(mActivePlay);
-                } else {
+                }
+                else
+                {
                     mPlayPauseButton.getRenderData().getMaterial()
                             .setMainTexture(mInactivePlay);
                 }
-            } else {
-                if (playPausePointed) {
+            }
+            else
+            {
+                if (playPausePointed)
+                {
                     mPlayPauseButton.getRenderData().getMaterial()
                             .setMainTexture(mActivePause);
-                } else {
+                }
+                else
+                {
                     mPlayPauseButton.getRenderData().getMaterial()
                             .setMainTexture(mInactivePause);
                 }
             }
 
-            if (frontPointed) {
-                if (isSingleTapped) {
+            if (frontPointed)
+            {
+                if (isSingleTapped)
+                {
                     mMediaPlayer
                             .seekTo(mMediaPlayer.getCurrentPosition() + 10000);
                 }
                 mFrontButton.getRenderData().getMaterial()
                         .setMainTexture(mActiveFront);
-            } else {
+            }
+            else
+            {
                 mFrontButton.getRenderData().getMaterial()
                         .setMainTexture(mInactiveFront);
             }
 
-            if (backPointed) {
-                if (isSingleTapped) {
+            if (backPointed)
+            {
+                if (isSingleTapped)
+                {
                     mMediaPlayer
                             .seekTo(mMediaPlayer.getCurrentPosition() - 10000);
 
                 }
                 mBackButton.getRenderData().getMaterial()
                         .setMainTexture(mActiveBack);
-            } else {
+            }
+            else
+            {
                 mBackButton.getRenderData().getMaterial()
                         .setMainTexture(mInactiveBack);
             }
 
-            if (imaxPointed) {
-                if (isSingleTapped) {
-                    if (!mIsIMAX) {
+            if (imaxPointed)
+            {
+                if (isSingleTapped)
+                {
+                    if (!mIsIMAX)
+                    {
                         mIsIMAX = true;
                         mTransitionTarget = 2.0f;
-                    } else {
+                    }
+                    else
+                    {
                         mIsIMAX = false;
                         mTransitionTarget = 1.0f;
                     }
                 }
                 mImaxButton.getRenderData().getMaterial()
                         .setMainTexture(mActiveImax);
-            } else {
+            }
+            else
+            {
                 mImaxButton.getRenderData().getMaterial()
                         .setMainTexture(mInactiveImax);
             }
 
-            if (selectPointed) {
-                if (isSingleTapped) {
+            if (selectPointed)
+            {
+                if (isSingleTapped)
+                {
                     mFadeWeight = 0.0f;
                     mCurrentCinema++;
                     if (mCurrentCinema >= mCinemaNum)
+                    {
                         mCurrentCinema = 0;
+                    }
                 }
                 mSelectButton.getRenderData().getMaterial()
                         .setMainTexture(mActiveSelect);
-            } else {
+            }
+            else
+            {
                 mSelectButton.getRenderData().getMaterial()
                         .setMainTexture(mInactiveSelect);
             }
 
-            if (seekbarRatio != null) {
+            if (seekbarRatio != null)
+            {
                 mSeekbar.glow();
-            } else {
+            }
+            else
+            {
                 mSeekbar.unglow();
             }
 
-            if (isTouched && seekbarRatio != null) {
+            if (isTouched && seekbarRatio != null)
+            {
                 int current = (int) (mMediaPlayer.getDuration() * seekbarRatio);
                 mMediaPlayer.seekTo(current);
                 mSeekbar.setTime(mGVRContext, current,
                         mMediaPlayer.getDuration());
-            } else {
+            }
+            else
+            {
                 mSeekbar.setTime(mGVRContext,
                         mMediaPlayer.getCurrentPosition(),
                         mMediaPlayer.getDuration());
             }
-        } else {
+        }
+        else
+        {
 
             turnOffGUIMenu();
 
-            if (isSingleTapped) {
+            if (isSingleTapped)
+            {
                 mIsUIHidden = false;
             }
         }
 
-        if (mIsGlobalMenuOn) {
-            if (pickedHolders == null) {
+        if (mIsGlobalMenuOn)
+        {
+            if (pickedHolders == null)
+            {
                 pickedHolders = GVRPicker.pickScene(mGVRContext.getMainScene());
             }
 
@@ -946,50 +1039,69 @@ public class VideoScript extends GVRScript {
             boolean passthroughPointed = false;
             boolean homePointed = false;
 
-            for (GVREyePointeeHolder holder : pickedHolders) {
-                if (holder.equals(mGlobalReorient.getEyePointeeHolder())) {
+            for (GVREyePointeeHolder holder : pickedHolders)
+            {
+                if (holder.equals(mGlobalReorient.getEyePointeeHolder()))
+                {
                     reorientPointed = true;
-                } else if (holder.equals(mGlobalPassthrough
-                        .getEyePointeeHolder())) {
+                }
+                else if (holder.equals(mGlobalPassthrough
+                        .getEyePointeeHolder()))
+                {
                     passthroughPointed = true;
-                } else if (holder.equals(mGlobalHome.getEyePointeeHolder())) {
+                }
+                else if (holder.equals(mGlobalHome.getEyePointeeHolder()))
+                {
                     homePointed = true;
                 }
             }
 
-            if (reorientPointed || passthroughPointed || homePointed) {
+            if (reorientPointed || passthroughPointed || homePointed)
+            {
                 isAnythingPointed = true;
             }
 
-            if (reorientPointed) {
+            if (reorientPointed)
+            {
                 mGlobalReorient.getRenderData().getMaterial()
                         .setMainTexture(mActiveReorient);
-                if (isSingleTapped) {
+                if (isSingleTapped)
+                {
                     mGVRContext.getMainScene().getMainCameraRig().resetYaw();
                     turnOffGlobalMenu();
                 }
-            } else {
+            }
+            else
+            {
                 mGlobalReorient.getRenderData().getMaterial()
                         .setMainTexture(mInactiveReorient);
             }
 
-            if (passthroughPointed) {
+            if (passthroughPointed)
+            {
                 mGlobalPassthrough.getRenderData().getMaterial()
                         .setMainTexture(mActivePassThrough);
-                if (isSingleTapped) {
-                    if (mIsPassThrough) {
+                if (isSingleTapped)
+                {
+                    if (mIsPassThrough)
+                    {
                         mPassThroughObject.getRenderData().setRenderMask(0);
                         mCamera.stopPreview();
                         mCamera.release();
                         mCamera = null;
                         mIsPassThrough = false;
-                    } else {
+                    }
+                    else
+                    {
                         mPassThroughObject.getRenderData().setRenderMask(
                                 GVRRenderMaskBit.Left | GVRRenderMaskBit.Right);
                         mCamera = Camera.open();
-                        try {
+                        try
+                        {
                             mCamera.setPreviewTexture(mCameraSurfaceTexture);
-                        } catch (IOException e) {
+                        }
+                        catch (IOException e)
+                        {
                             e.printStackTrace();
                         }
 
@@ -1001,25 +1113,32 @@ public class VideoScript extends GVRScript {
                     }
                     turnOffGlobalMenu();
                 }
-            } else {
+            }
+            else
+            {
                 mGlobalPassthrough.getRenderData().getMaterial()
                         .setMainTexture(mInactivePassthrough);
             }
 
-            if (homePointed) {
+            if (homePointed)
+            {
                 mGlobalHome.getRenderData().getMaterial()
                         .setMainTexture(mActiveHome);
-                if (isSingleTapped) {
+                if (isSingleTapped)
+                {
                     turnOffGlobalMenu();
                 }
-            } else {
+            }
+            else
+            {
                 mGlobalHome.getRenderData().getMaterial()
                         .setMainTexture(mInactiveHome);
             }
 
             String date = new SimpleDateFormat("dd/MM/yy HH:mm:ss",
                     Locale.KOREA).format(new Date());
-            if (!date.equals(mDateText)) {
+            if (!date.equals(mDateText))
+            {
                 mDateText = date;
                 mGlobalTime
                         .getRenderData()
@@ -1033,21 +1152,30 @@ public class VideoScript extends GVRScript {
             mGlobalBatteryInside.getTransform().setPositionX(
                     -0.5f + batteryRatio * 0.5f);
 
-            if (isButtonDown) {
+            if (isButtonDown)
+            {
                 turnOffGlobalMenu();
             }
-        } else {
-            if (isLongButtonPressed) {
+        }
+        else
+        {
+            if (isLongButtonPressed)
+            {
                 mIsGlobalMenuOn = true;
                 float yaw = mGVRContext.getMainScene().getMainCameraRig()
                         .getTransform().getRotationYaw();
                 float pitch = mGVRContext.getMainScene().getMainCameraRig()
                         .getTransform().getRotationPitch();
-                if (Math.abs(pitch) >= 90.0f) {
+                if (Math.abs(pitch) >= 90.0f)
+                {
                     if (yaw > 0.0)
+                    {
                         yaw = 180.0f - yaw;
+                    }
                     else
+                    {
                         yaw = -180.0f - yaw;
+                    }
                 }
                 mGlobalMenuRoot.getTransform().rotateByAxis(yaw, 0.0f, 1.0f,
                         0.0f);
@@ -1067,47 +1195,61 @@ public class VideoScript extends GVRScript {
                 mGlobalReorient.getEyePointeeHolder().setEnable(true);
                 mGlobalPassthrough.getEyePointeeHolder().setEnable(true);
                 mGlobalHome.getEyePointeeHolder().setEnable(true);
-            } else if (isButtonDown)
+            }
+            else if (isButtonDown)
+            {
                 mTransitionTarget = 1.0f - mTransitionTarget;
+            }
         }
 
-        if (!mIsUIHidden || mIsGlobalMenuOn) {
+        if (!mIsUIHidden || mIsGlobalMenuOn)
+        {
             mHeadTracker.getRenderData().setRenderMask(
                     GVRRenderMaskBit.Left | GVRRenderMaskBit.Right);
-        } else {
+        }
+        else
+        {
             mHeadTracker.getRenderData().setRenderMask(0);
         }
 
-        if (!isUIHiden && isSingleTapped && !isAnythingPointed) {
+        if (!isUIHiden && isSingleTapped && !isAnythingPointed)
+        {
             mIsUIHidden = true;
         }
     }
 
-    void onPause() {
+    void onPause()
+    {
         mMediaPlayer.pause();
     }
 
-    void onButtonDown() {
+    void onButtonDown()
+    {
         mIsButtonDown = true;
     }
 
-    void onLongButtonPress() {
+    void onLongButtonPress()
+    {
         mIsLongButtonPressed = true;
     }
 
-    void onTouchEvent(MotionEvent event) {
+    void onTouchEvent(MotionEvent event)
+    {
         mIsTouched = true;
     }
 
-    void onSingleTap(MotionEvent e) {
+    void onSingleTap(MotionEvent e)
+    {
         mIsSingleTapped = true;
     }
 
-    void setBatteryLevel(int level) {
+    void setBatteryLevel(int level)
+    {
         mBatteryLevel = level;
     }
 
-    private void turnOffGUIMenu() {
+    private void turnOffGUIMenu()
+    {
         mPlayPauseButton.getRenderData().setRenderMask(0);
         mFrontButton.getRenderData().setRenderMask(0);
         mBackButton.getRenderData().setRenderMask(0);
@@ -1123,7 +1265,8 @@ public class VideoScript extends GVRScript {
         mSelectButton.getEyePointeeHolder().setEnable(false);
     }
 
-    private void turnOffGlobalMenu() {
+    private void turnOffGlobalMenu()
+    {
         mIsGlobalMenuOn = false;
         mGlobalReorient.getRenderData().setRenderMask(0);
         mGlobalPassthrough.getRenderData().setRenderMask(0);
