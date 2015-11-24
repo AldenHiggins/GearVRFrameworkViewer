@@ -85,15 +85,12 @@ public class VideoScript extends GVRScript
 
     private GVRSceneObject mGlobalMenuRoot = null;
     private GVRSceneObject mGlobalReorient = null;
-    private GVRSceneObject mGlobalPassthrough = null;
     private GVRSceneObject mGlobalHome = null;
     private GVRSceneObject mGlobalTime = null;
     private GVRSceneObject mGlobalBattery = null;
     private GVRSceneObject mGlobalBatteryInside = null;
     private GVRTexture mInactiveReorient = null;
     private GVRTexture mActiveReorient = null;
-    private GVRTexture mInactivePassthrough = null;
-    private GVRTexture mActivePassThrough = null;
     private GVRTexture mInactiveHome = null;
     private GVRTexture mActiveHome = null;
 
@@ -573,30 +570,6 @@ public class VideoScript extends GVRScript
             reorientHolder.setEnable(false);
             mGlobalMenuRoot.addChildObject(mGlobalReorient);
 
-            mInactivePassthrough = gvrContext
-                    .loadTexture(new GVRAndroidResource(mGVRContext,
-                            "global/passthrough-inactive.png"));
-            mActivePassThrough = gvrContext.loadTexture(new GVRAndroidResource(
-                    mGVRContext, "global/passthrough-active.png"));
-            mGlobalPassthrough = new GVRSceneObject(gvrContext,
-                    gvrContext.createQuad(3.775f, 1.875f), mInactivePassthrough);
-            mGlobalPassthrough.getRenderData().getMaterial()
-                    .setTexture("active_passthrough", mActivePassThrough);
-            mGlobalPassthrough.getRenderData().getMaterial()
-                    .setTexture("inactive_passthrough", mInactivePassthrough);
-            mGlobalPassthrough.getTransform().setPosition(0.0f, 0.0f, -15.0f);
-            mGlobalPassthrough.getRenderData().setDepthTest(false);
-            mGlobalPassthrough.getRenderData().setRenderingOrder(
-                    GVRRenderingOrder.TRANSPARENT + 5000);
-            mGlobalPassthrough.getRenderData().setRenderMask(0);
-            GVREyePointeeHolder passthroughHolder = new GVREyePointeeHolder(
-                    gvrContext);
-            passthroughHolder.addPointee(new GVRMeshEyePointee(gvrContext,
-                    mGlobalPassthrough.getRenderData().getMesh()));
-            mGlobalPassthrough.attachEyePointeeHolder(passthroughHolder);
-            passthroughHolder.setEnable(false);
-            mGlobalMenuRoot.addChildObject(mGlobalPassthrough);
-
             mInactiveHome = gvrContext.loadTexture(new GVRAndroidResource(
                     mGVRContext, "global/home-inactive.png"));
             mActiveHome = gvrContext.loadTexture(new GVRAndroidResource(
@@ -702,88 +675,72 @@ public class VideoScript extends GVRScript
         mTransitionWeight += step * (mTransitionTarget - mTransitionWeight);
         mFadeWeight += 0.01f * (mFadeTarget - mFadeWeight);
 
-        if (mIsPassThrough)
+
+        if (mCurrentCinema == 0)
         {
-            mCameraSurfaceTexture.updateTexImage();
-            mMediaPlayer.pause();
-            mFadeWeight = 0.0f;
-            for (int i = 0; i < mCinema[0].getChildrenCount(); i++)
-            {
-                mCinema[0].getChildByIndex(i).getRenderData().setRenderMask(0);
-            }
             for (int i = 0; i < mCinema[1].getChildrenCount(); i++)
             {
-                mCinema[1].getChildByIndex(i).getRenderData().setRenderMask(0);
+                mCinema[1].getChildByIndex(i).getRenderData()
+                        .setRenderMask(0);
             }
-            mIsUIHidden = true;
+            for (int i = 0; i < mCinema[0].getChildrenCount(); i++)
+            {
+                mCinema[0]
+                        .getChildByIndex(i)
+                        .getRenderData()
+                        .setRenderMask(
+                                GVRRenderMaskBit.Left
+                                        | GVRRenderMaskBit.Right);
+            }
+
+            mLeftSceneObject
+                    .getRenderData()
+                    .getMaterial()
+                    .setFloat(RadiosityShader.WEIGHT_KEY, mTransitionWeight);
+            mRightSceneObject
+                    .getRenderData()
+                    .getMaterial()
+                    .setFloat(RadiosityShader.WEIGHT_KEY, mTransitionWeight);
+            mLeftSceneObject.getRenderData().getMaterial()
+                    .setFloat(RadiosityShader.FADE_KEY, mFadeWeight);
+            mRightSceneObject.getRenderData().getMaterial()
+                    .setFloat(RadiosityShader.FADE_KEY, mFadeWeight);
+            mLeftSceneObject.getRenderData().getMaterial()
+                    .setFloat(RadiosityShader.LIGHT_KEY, 2.0f);
+            mRightSceneObject.getRenderData().getMaterial()
+                    .setFloat(RadiosityShader.LIGHT_KEY, 2.0f);
         }
         else
         {
-            if (mCurrentCinema == 0)
+            for (int i = 0; i < mCinema[0].getChildrenCount(); i++)
             {
-                for (int i = 0; i < mCinema[1].getChildrenCount(); i++)
-                {
-                    mCinema[1].getChildByIndex(i).getRenderData()
-                            .setRenderMask(0);
-                }
-                for (int i = 0; i < mCinema[0].getChildrenCount(); i++)
-                {
-                    mCinema[0]
-                            .getChildByIndex(i)
-                            .getRenderData()
-                            .setRenderMask(
-                                    GVRRenderMaskBit.Left
-                                            | GVRRenderMaskBit.Right);
-                }
-
-                mLeftSceneObject
-                        .getRenderData()
-                        .getMaterial()
-                        .setFloat(RadiosityShader.WEIGHT_KEY, mTransitionWeight);
-                mRightSceneObject
-                        .getRenderData()
-                        .getMaterial()
-                        .setFloat(RadiosityShader.WEIGHT_KEY, mTransitionWeight);
-                mLeftSceneObject.getRenderData().getMaterial()
-                        .setFloat(RadiosityShader.FADE_KEY, mFadeWeight);
-                mRightSceneObject.getRenderData().getMaterial()
-                        .setFloat(RadiosityShader.FADE_KEY, mFadeWeight);
-                mLeftSceneObject.getRenderData().getMaterial()
-                        .setFloat(RadiosityShader.LIGHT_KEY, 2.0f);
-                mRightSceneObject.getRenderData().getMaterial()
-                        .setFloat(RadiosityShader.LIGHT_KEY, 2.0f);
+                mCinema[0].getChildByIndex(i).getRenderData()
+                        .setRenderMask(0);
             }
-            else
+            for (int i = 0; i < mCinema[1].getChildrenCount(); i++)
             {
-                for (int i = 0; i < mCinema[0].getChildrenCount(); i++)
-                {
-                    mCinema[0].getChildByIndex(i).getRenderData()
-                            .setRenderMask(0);
-                }
-                for (int i = 0; i < mCinema[1].getChildrenCount(); i++)
-                {
-                    mCinema[1]
-                            .getChildByIndex(i)
-                            .getRenderData()
-                            .setRenderMask(
-                                    GVRRenderMaskBit.Left
-                                            | GVRRenderMaskBit.Right);
-                }
-
-                mOculusSceneObject1
+                mCinema[1]
+                        .getChildByIndex(i)
                         .getRenderData()
-                        .getMaterial()
-                        .setFloat(RadiosityShader.WEIGHT_KEY, mTransitionWeight);
-                mOculusSceneObject1.getRenderData().getMaterial()
-                        .setFloat(RadiosityShader.FADE_KEY, mFadeWeight);
-                mOculusSceneObject1.getRenderData().getMaterial()
-                        .setFloat(RadiosityShader.LIGHT_KEY, 1.0f);
-                mOculusSceneObject2.getRenderData().getMaterial()
-                        .setFloat(AdditiveShader.WEIGHT_KEY, mTransitionWeight);
-                mOculusSceneObject2.getRenderData().getMaterial()
-                        .setFloat(AdditiveShader.FADE_KEY, mFadeWeight);
+                        .setRenderMask(
+                                GVRRenderMaskBit.Left
+                                        | GVRRenderMaskBit.Right);
             }
+
+            mOculusSceneObject1
+                    .getRenderData()
+                    .getMaterial()
+                    .setFloat(RadiosityShader.WEIGHT_KEY, mTransitionWeight);
+            mOculusSceneObject1.getRenderData().getMaterial()
+                    .setFloat(RadiosityShader.FADE_KEY, mFadeWeight);
+            mOculusSceneObject1.getRenderData().getMaterial()
+                    .setFloat(RadiosityShader.LIGHT_KEY, 1.0f);
+            mOculusSceneObject2.getRenderData().getMaterial()
+                    .setFloat(AdditiveShader.WEIGHT_KEY, mTransitionWeight);
+            mOculusSceneObject2.getRenderData().getMaterial()
+                    .setFloat(AdditiveShader.FADE_KEY, mFadeWeight);
         }
+
 
         float scale = 1.0f + 1.0f * (mTransitionWeight - 1.0f);
         if (scale >= 1.0f)
@@ -1029,6 +986,8 @@ public class VideoScript extends GVRScript
             }
         }
 
+
+
         if (mIsGlobalMenuOn)
         {
             if (pickedHolders == null)
@@ -1045,11 +1004,6 @@ public class VideoScript extends GVRScript
                 if (holder.equals(mGlobalReorient.getEyePointeeHolder()))
                 {
                     reorientPointed = true;
-                }
-                else if (holder.equals(mGlobalPassthrough
-                        .getEyePointeeHolder()))
-                {
-                    passthroughPointed = true;
                 }
                 else if (holder.equals(mGlobalHome.getEyePointeeHolder()))
                 {
@@ -1076,49 +1030,6 @@ public class VideoScript extends GVRScript
             {
                 mGlobalReorient.getRenderData().getMaterial()
                         .setMainTexture(mInactiveReorient);
-            }
-
-            if (passthroughPointed)
-            {
-                mGlobalPassthrough.getRenderData().getMaterial()
-                        .setMainTexture(mActivePassThrough);
-                if (isSingleTapped)
-                {
-                    if (mIsPassThrough)
-                    {
-                        mPassThroughObject.getRenderData().setRenderMask(0);
-                        mCamera.stopPreview();
-                        mCamera.release();
-                        mCamera = null;
-                        mIsPassThrough = false;
-                    }
-                    else
-                    {
-                        mPassThroughObject.getRenderData().setRenderMask(
-                                GVRRenderMaskBit.Left | GVRRenderMaskBit.Right);
-                        mCamera = Camera.open();
-                        try
-                        {
-                            mCamera.setPreviewTexture(mCameraSurfaceTexture);
-                        }
-                        catch (IOException e)
-                        {
-                            e.printStackTrace();
-                        }
-
-                        Parameters params = mCamera.getParameters();
-                        params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
-                        mCamera.setParameters(params);
-                        mCamera.startPreview();
-                        mIsPassThrough = true;
-                    }
-                    turnOffGlobalMenu();
-                }
-            }
-            else
-            {
-                mGlobalPassthrough.getRenderData().getMaterial()
-                        .setMainTexture(mInactivePassthrough);
             }
 
             if (homePointed)
@@ -1183,8 +1094,6 @@ public class VideoScript extends GVRScript
 
                 mGlobalReorient.getRenderData().setRenderMask(
                         GVRRenderMaskBit.Left | GVRRenderMaskBit.Right);
-                mGlobalPassthrough.getRenderData().setRenderMask(
-                        GVRRenderMaskBit.Left | GVRRenderMaskBit.Right);
                 mGlobalHome.getRenderData().setRenderMask(
                         GVRRenderMaskBit.Left | GVRRenderMaskBit.Right);
                 mGlobalTime.getRenderData().setRenderMask(
@@ -1194,7 +1103,6 @@ public class VideoScript extends GVRScript
                 mGlobalBatteryInside.getRenderData().setRenderMask(
                         GVRRenderMaskBit.Left | GVRRenderMaskBit.Right);
                 mGlobalReorient.getEyePointeeHolder().setEnable(true);
-                mGlobalPassthrough.getEyePointeeHolder().setEnable(true);
                 mGlobalHome.getEyePointeeHolder().setEnable(true);
             }
             else if (isButtonDown)
@@ -1260,13 +1168,11 @@ public class VideoScript extends GVRScript
     {
         mIsGlobalMenuOn = false;
         mGlobalReorient.getRenderData().setRenderMask(0);
-        mGlobalPassthrough.getRenderData().setRenderMask(0);
         mGlobalHome.getRenderData().setRenderMask(0);
         mGlobalTime.getRenderData().setRenderMask(0);
         mGlobalBattery.getRenderData().setRenderMask(0);
         mGlobalBatteryInside.getRenderData().setRenderMask(0);
         mGlobalReorient.getEyePointeeHolder().setEnable(false);
-        mGlobalPassthrough.getEyePointeeHolder().setEnable(false);
         mGlobalHome.getEyePointeeHolder().setEnable(false);
     }
 }
