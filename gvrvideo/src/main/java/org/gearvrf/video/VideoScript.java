@@ -24,6 +24,7 @@ import org.gearvrf.*;
 import org.gearvrf.GVRMaterial.GVRShaderType;
 import org.gearvrf.GVRRenderData.GVRRenderMaskBit;
 import org.gearvrf.GVRRenderData.GVRRenderingOrder;
+import org.gearvrf.scene_objects.GVRSphereSceneObject;
 import org.gearvrf.util.FPSCounter;
 
 import android.content.res.AssetFileDescriptor;
@@ -39,7 +40,6 @@ import android.view.Surface;
 
 public class VideoScript extends GVRScript
 {
-
     private static final String TAG = "VideoScript";
 
     private GVRContext mGVRContext = null;
@@ -181,6 +181,8 @@ public class VideoScript extends GVRScript
             mainScene.getMainCameraRig().addChildObject(mHeadTracker);
             mHeadTracker.getRenderData().setRenderMask(
                     GVRRenderMaskBit.Left | GVRRenderMaskBit.Right);
+
+
 
             /*
              * FXGear Background
@@ -435,6 +437,15 @@ public class VideoScript extends GVRScript
                     mPlayPauseButton.getRenderData().getMesh()));
             mPlayPauseButton.attachEyePointeeHolder(playPauseHolder);
             mainScene.addSceneObject(mPlayPauseButton);
+
+
+            /*
+             * Test out adding a new object to the scene
+             */
+            GVRSphereSceneObject mSphereEvironment = new GVRSphereSceneObject(
+                    gvrContext, 18, 36, false, mPlayPauseButton.getRenderData().getMaterial(), 4, 4);
+            mSphereEvironment.getTransform().setPosition(0.0f, -0.8f, -8.0f);
+            mainScene.addSceneObject(mSphereEvironment);
 
             mInactiveFront = gvrContext.loadTexture(new GVRAndroidResource(
                     mGVRContext, "button/front-inactive.png"));
