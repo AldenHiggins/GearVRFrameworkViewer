@@ -1,0 +1,14 @@
+*.properties
+gvrvideo/build/
+gvrvideo/src/main/assets/
+*.gradle
+*.jar
+*.xml
+gvrvideo/src/main/jniLibs/
+.idea/.name
+*.iml
+README.txt
+gradlew
+*.bat
+import-summary.txt
+gvrvideo/src/main/res/drawable-xxxhdpi/gearvr_logo.jpg
