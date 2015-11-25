@@ -74,17 +74,13 @@ public class VideoScript extends GVRScript
                 mGVRContext, false, generateCubemapTexture(cubemapName, isRightEye));
         cube.getTransform().setScale(CUBE_WIDTH, CUBE_WIDTH, CUBE_WIDTH);
 
+        // Set the rendermask correctly
+        int renderMask = isRightEye ? GVRRenderMaskBit.Right : GVRRenderMaskBit.Left;
+
         // Add the render mask to all of the cube environment's children
         for (int cubeFaceIndex = 0; cubeFaceIndex < cube.getChildrenCount();cubeFaceIndex++)
         {
-            if (isRightEye)
-            {
-                cube.getChildByIndex(cubeFaceIndex).getRenderData().setRenderMask(GVRRenderMaskBit.Right);
-            }
-            else
-            {
-                cube.getChildByIndex(cubeFaceIndex).getRenderData().setRenderMask(GVRRenderMaskBit.Left);
-            }
+            cube.getChildByIndex(cubeFaceIndex).getRenderData().setRenderMask(renderMask);
         }
         scene.addSceneObject(cube);
     }
@@ -93,36 +89,22 @@ public class VideoScript extends GVRScript
     private ArrayList<Future<GVRTexture>> generateCubemapTexture(String cubemapName, boolean isRightEyeTexture)
     {
         // Set the rightOrLeft string to the correct value
-        String rightOrLeft = "L";
-        if (isRightEyeTexture)
-        {
-            rightOrLeft = "R";
-        }
+        String rightOrLeft = isRightEyeTexture ? "R" : "L";
 
         // Populate the cubemap
         ArrayList<Future<GVRTexture>> cubemapTexture = null;
+        // The order to add all of the faces into the cubemap (and the way they should be named)
+        String[] faces = { "_Back", "_Right", "_Front", "_Left", "_Up", "_Down" };
         try
         {
-            // List of textures (one per face)
+            // Generate the list of textures
             cubemapTexture = new ArrayList<Future<GVRTexture>>(6);
-            cubemapTexture.add(mGVRContext
-                    .loadFutureTexture(new GVRAndroidResource(mGVRContext,
-                            cubemapName + "/" + cubemapName + "_" + rightOrLeft + "_Back.jpg")));
-            cubemapTexture.add(mGVRContext
-                    .loadFutureTexture(new GVRAndroidResource(mGVRContext,
-                            cubemapName + "/" + cubemapName + "_" + rightOrLeft + "_Right.jpg")));
-            cubemapTexture.add(mGVRContext
-                    .loadFutureTexture(new GVRAndroidResource(mGVRContext,
-                            cubemapName + "/" + cubemapName + "_" + rightOrLeft + "_Front.jpg")));
-            cubemapTexture.add(mGVRContext
-                    .loadFutureTexture(new GVRAndroidResource(mGVRContext,
-                            cubemapName + "/" + cubemapName + "_" + rightOrLeft + "_Left.jpg")));
-            cubemapTexture.add(mGVRContext
-                    .loadFutureTexture(new GVRAndroidResource(mGVRContext,
-                            cubemapName + "/" + cubemapName + "_" + rightOrLeft + "_Up.jpg")));
-            cubemapTexture.add(mGVRContext
-                    .loadFutureTexture(new GVRAndroidResource(mGVRContext,
-                            cubemapName + "/" + cubemapName + "_" + rightOrLeft + "_Down.jpg")));
+            for (int faceIndex = 0; faceIndex < 6; faceIndex++)
+            {
+                cubemapTexture.add(mGVRContext
+                        .loadFutureTexture(new GVRAndroidResource(mGVRContext,
+                                cubemapName + "/" + cubemapName + "_" + rightOrLeft + faces[faceIndex] + ".jpg")));
+            }
         }
         catch (IOException e)
         {
