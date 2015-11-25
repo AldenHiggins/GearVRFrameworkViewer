@@ -101,19 +101,45 @@ public class VideoScript extends GVRScript
             // ////////////////////////////////////////////////////////////
             GVRCubeSceneObject mCubeEvironment = new GVRCubeSceneObject(
                     gvrContext, false, futureTextureList);
-            mCubeEvironment.getRenderData().setRenderMask(GVRRenderMaskBit.Left);
+//            mCubeEvironment.getRenderData().setRenderMask(GVRRenderMaskBit.Left);
             mCubeEvironment.getTransform().setScale(CUBE_WIDTH, CUBE_WIDTH,
                     CUBE_WIDTH);
+            // Add the render mask to all of the cube environment's children
+            for (int cubeFaceIndex = 0; cubeFaceIndex < mCubeEvironment.getChildrenCount();cubeFaceIndex++)
+            {
+                mCubeEvironment.getChildByIndex(cubeFaceIndex).getRenderData().setRenderMask(GVRRenderMaskBit.Left);
+            }
             scene.addSceneObject(mCubeEvironment);
 
-            GVRCubeSceneObject otherTestCube = new GVRCubeSceneObject(
-                    gvrContext, false, futureTextureList);
-            otherTestCube.getRenderData().setRenderMask(GVRRenderMaskBit.Left);
-            otherTestCube.getTransform().setPosition(0.0f, 0.0f, -3.0f);
+
+//
+//            // List of textures (one per face)
+//            ArrayList<Future<GVRTexture>> beachTextureList = new ArrayList<Future<GVRTexture>>(6);
+//            beachTextureList.add(gvrContext
+//                    .loadFutureTexture(new GVRAndroidResource(gvrContext,
+//                            "beach/back.jpg")));
+//            beachTextureList.add(gvrContext
+//                    .loadFutureTexture(new GVRAndroidResource(gvrContext,
+//                            "beach/right.jpg")));
+//            beachTextureList.add(gvrContext
+//                    .loadFutureTexture(new GVRAndroidResource(gvrContext,
+//                            "beach/front.jpg")));
+//            beachTextureList.add(gvrContext
+//                    .loadFutureTexture(new GVRAndroidResource(gvrContext,
+//                            "beach/left.jpg")));
+//            beachTextureList.add(gvrContext
+//                    .loadFutureTexture(new GVRAndroidResource(gvrContext,
+//                            "beach/top.jpg")));
+//            beachTextureList.add(gvrContext
+//                    .loadFutureTexture(new GVRAndroidResource(gvrContext,
+//                            "beach/bottom.jpg")));
+//
+//            GVRCubeSceneObject otherTestCube = new GVRCubeSceneObject(
+//                    gvrContext, false, beachTextureList);
+////            otherTestCube.getRenderData().setRenderMask(GVRRenderMaskBit.Right);
+//            otherTestCube.getTransform().setScale(CUBE_WIDTH - 1, CUBE_WIDTH - 1,
+//                    CUBE_WIDTH - 1);
 //            scene.addSceneObject(otherTestCube);
-
-            mGVRContext.getMainScene().getMainCameraRig().getLeftCamera().addChildObject(otherTestCube);
-
         }
         catch (IOException e)
         {
