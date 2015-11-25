@@ -218,8 +218,11 @@ public class VideoScript extends GVRScript
 
             GVRCubeSceneObject mCubeEvironment = new GVRCubeSceneObject(
                     gvrContext, false, futureTextureList);
-//            mCubeEvironment.getTransform().setScale(CUBE_WIDTH, CUBE_WIDTH,
-//                    CUBE_WIDTH);
+            mCubeEvironment.getTransform().setScale(CUBE_WIDTH, CUBE_WIDTH,
+                    CUBE_WIDTH);
+            mCubeEvironment.getRenderData().setRenderMask(0);
+            mCubeEvironment.getRenderData().setRenderMask(GVRRenderMaskBit.Left);
+//            | GVRRenderMaskBit.Right
             mainScene.addSceneObject(mCubeEvironment);
 
             /*
@@ -255,8 +258,8 @@ public class VideoScript extends GVRScript
             mLeftSceneObject.getRenderData().setCullTest(false);
             mRightSceneObject.getRenderData().setCullTest(false);
 
-            mCinema[0].addChildObject(mLeftSceneObject);
-            mCinema[0].addChildObject(mRightSceneObject);
+//            mCinema[0].addChildObject(mLeftSceneObject);
+//            mCinema[0].addChildObject(mRightSceneObject);
 
             /*
              * Radiosity settings
@@ -325,15 +328,15 @@ public class VideoScript extends GVRScript
             mScreenL.getRenderData().setRenderMask(GVRRenderMaskBit.Left);
             mScreenR.getRenderData().setRenderMask(GVRRenderMaskBit.Right);
 
-            mCinema[0].addChildObject(mScreenL);
-            mCinema[0].addChildObject(mScreenR);
-
-            mainScene.addSceneObject(mCinema[0]);
+//            mCinema[0].addChildObject(mScreenL);
+//            mCinema[0].addChildObject(mScreenR);
+//
+//            mainScene.addSceneObject(mCinema[0]);
 
             /*
              * Oculus Background
              */
-            mCinema[1] = new GVRSceneObject(mGVRContext);
+//            mCinema[1] = new GVRSceneObject(mGVRContext);
 
             GVRMesh backgroundMesh1 = gvrContext
                     .loadMesh(new GVRAndroidResource(mGVRContext,
@@ -358,8 +361,8 @@ public class VideoScript extends GVRScript
             mOculusSceneObject2.getRenderData().setCullTest(false);
             mOculusSceneObject2.getRenderData().setRenderingOrder(2500);
 
-            mCinema[1].addChildObject(mOculusSceneObject1);
-            mCinema[1].addChildObject(mOculusSceneObject2);
+//            mCinema[1].addChildObject(mOculusSceneObject1);
+//            mCinema[1].addChildObject(mOculusSceneObject2);
 
             /*
              * Radiosity settings
@@ -425,22 +428,22 @@ public class VideoScript extends GVRScript
             mOculusScreenR.getRenderData()
                     .setRenderMask(GVRRenderMaskBit.Right);
 
-            mCinema[1].addChildObject(mOculusScreenL);
-            mCinema[1].addChildObject(mOculusScreenR);
+//            mCinema[1].addChildObject(mOculusScreenL);
+//            mCinema[1].addChildObject(mOculusScreenR);
 
             float pivot_x = -3.353f;
             float pivot_y = 0.401f;
             float pivot_z = -0.000003f;
 
-            mCinema[1].getTransform().setPosition(-pivot_x, -pivot_y, -pivot_z);
-            mCinema[1].getTransform().rotateByAxisWithPivot(90.0f, 0.0f, 1.0f,
-                    0.0f, 0.0f, 0.0f, 0.0f);
-
-            mainScene.addSceneObject(mCinema[1]);
-            for (int i = 0; i < mCinema[1].getChildrenCount(); i++)
-            {
-                mCinema[1].getChildByIndex(i).getRenderData().setRenderMask(0);
-            }
+//            mCinema[1].getTransform().setPosition(-pivot_x, -pivot_y, -pivot_z);
+//            mCinema[1].getTransform().rotateByAxisWithPivot(90.0f, 0.0f, 1.0f,
+//                    0.0f, 0.0f, 0.0f, 0.0f);
+//
+//            mainScene.addSceneObject(mCinema[1]);
+//            for (int i = 0; i < mCinema[1].getChildrenCount(); i++)
+//            {
+//                mCinema[1].getChildByIndex(i).getRenderData().setRenderMask(0);
+//            }
 
             /*
              * Buttons
@@ -727,20 +730,20 @@ public class VideoScript extends GVRScript
 
         if (mCurrentCinema == 0)
         {
-            for (int i = 0; i < mCinema[1].getChildrenCount(); i++)
-            {
-                mCinema[1].getChildByIndex(i).getRenderData()
-                        .setRenderMask(0);
-            }
-            for (int i = 0; i < mCinema[0].getChildrenCount(); i++)
-            {
-                mCinema[0]
-                        .getChildByIndex(i)
-                        .getRenderData()
-                        .setRenderMask(
-                                GVRRenderMaskBit.Left
-                                        | GVRRenderMaskBit.Right);
-            }
+//            for (int i = 0; i < mCinema[1].getChildrenCount(); i++)
+//            {
+//                mCinema[1].getChildByIndex(i).getRenderData()
+//                        .setRenderMask(0);
+//            }
+//            for (int i = 0; i < mCinema[0].getChildrenCount(); i++)
+//            {
+//                mCinema[0]
+//                        .getChildByIndex(i)
+//                        .getRenderData()
+//                        .setRenderMask(
+//                                GVRRenderMaskBit.Left
+//                                        | GVRRenderMaskBit.Right);
+//            }
 
             mLeftSceneObject
                     .getRenderData()
@@ -761,20 +764,20 @@ public class VideoScript extends GVRScript
         }
         else
         {
-            for (int i = 0; i < mCinema[0].getChildrenCount(); i++)
-            {
-                mCinema[0].getChildByIndex(i).getRenderData()
-                        .setRenderMask(0);
-            }
-            for (int i = 0; i < mCinema[1].getChildrenCount(); i++)
-            {
-                mCinema[1]
-                        .getChildByIndex(i)
-                        .getRenderData()
-                        .setRenderMask(
-                                GVRRenderMaskBit.Left
-                                        | GVRRenderMaskBit.Right);
-            }
+//            for (int i = 0; i < mCinema[0].getChildrenCount(); i++)
+//            {
+//                mCinema[0].getChildByIndex(i).getRenderData()
+//                        .setRenderMask(0);
+//            }
+//            for (int i = 0; i < mCinema[1].getChildrenCount(); i++)
+//            {
+//                mCinema[1]
+//                        .getChildByIndex(i)
+//                        .getRenderData()
+//                        .setRenderMask(
+//                                GVRRenderMaskBit.Left
+//                                        | GVRRenderMaskBit.Right);
+//            }
 
             mOculusSceneObject1
                     .getRenderData()
