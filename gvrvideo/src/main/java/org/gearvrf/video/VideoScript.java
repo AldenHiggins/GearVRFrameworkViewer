@@ -17,13 +17,16 @@ package org.gearvrf.video;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.Future;
 
 import org.gearvrf.*;
 import org.gearvrf.GVRMaterial.GVRShaderType;
 import org.gearvrf.GVRRenderData.GVRRenderMaskBit;
 import org.gearvrf.GVRRenderData.GVRRenderingOrder;
+import org.gearvrf.scene_objects.GVRCubeSceneObject;
 import org.gearvrf.scene_objects.GVRSphereSceneObject;
 import org.gearvrf.util.FPSCounter;
 
@@ -120,6 +123,9 @@ public class VideoScript extends GVRScript
     private float mFadeWeight = 0.0f;
     private float mFadeTarget = 1.0f;
 
+    private static final float CUBE_WIDTH = 20.0f;
+    private static final float SCALE_FACTOR = 2.0f;
+
     private GVRActivity mActivity;
 
     VideoScript(GVRActivity activity)
@@ -182,7 +188,39 @@ public class VideoScript extends GVRScript
             mHeadTracker.getRenderData().setRenderMask(
                     GVRRenderMaskBit.Left | GVRRenderMaskBit.Right);
 
+            Log.v("Alden", "The program is running");
 
+
+            // Initialize scene cubemap!!!
+            ArrayList<Future<GVRTexture>> futureTextureList = new ArrayList<Future<GVRTexture>>(6);
+            futureTextureList.add(gvrContext
+                    .loadFutureTexture(new GVRAndroidResource(mGVRContext,
+                            "comcast/back.jpg")));
+            futureTextureList.add(gvrContext
+                    .loadFutureTexture(new GVRAndroidResource(mGVRContext,
+                            "comcast/right.jpg")));
+            futureTextureList.add(gvrContext
+                    .loadFutureTexture(new GVRAndroidResource(mGVRContext,
+                            "comcast/front.jpg")));
+            futureTextureList.add(gvrContext
+                    .loadFutureTexture(new GVRAndroidResource(mGVRContext,
+                            "comcast/left.jpg")));
+            futureTextureList.add(gvrContext
+                    .loadFutureTexture(new GVRAndroidResource(mGVRContext,
+                            "comcast/top.jpg")));
+            futureTextureList.add(gvrContext
+                    .loadFutureTexture(new GVRAndroidResource(mGVRContext,
+                            "comcast/bottom.jpg")));
+
+            // ////////////////////////////////////////////////////////////
+            // create surrounding cube using GVRCubeSceneObject method A //
+            // ////////////////////////////////////////////////////////////
+
+            GVRCubeSceneObject mCubeEvironment = new GVRCubeSceneObject(
+                    gvrContext, false, futureTextureList);
+//            mCubeEvironment.getTransform().setScale(CUBE_WIDTH, CUBE_WIDTH,
+//                    CUBE_WIDTH);
+            mainScene.addSceneObject(mCubeEvironment);
 
             /*
              * FXGear Background
