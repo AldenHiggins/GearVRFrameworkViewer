@@ -49,26 +49,42 @@ public class VideoScript extends GVRScript
     // Set the width of the surrounding cube
     private static final float CUBE_WIDTH = 20.0f;
     // Set the default cubemap name to use
-    private static final String DEFAULT_CUBEMAP_NAME = "Interior_02";
+    private static final String DEFAULT_CUBEMAP_NAME = "Interior_01";
+    private static final String OTHER_CUBEMAP_NAME = "Interior_02";
     private GVRContext mGVRContext = null;
+
+    // Store the first and second cubemaps so they can be quickly switched when needed
+    private GVRCubeSceneObject firstLeft;
+    private GVRCubeSceneObject firstRight;
+
+    private GVRCubeSceneObject secondLeft;
+    private GVRCubeSceneObject secondRight;
 
     @Override
     public void onInit(GVRContext gvrContext)
     {
         mGVRContext = gvrContext;
-
         GVRScene scene = mGVRContext.getNextMainScene();
 
         // Set the IPD to .065
         scene.getMainCameraRig().setCameraSeparationDistance(.065f);
 
-        // Generate right eye cubemap
-        addLeftOrRightCubemapToScene(scene, true, "Interior_02");
-        // Generate left eye cubemap
-        addLeftOrRightCubemapToScene(scene, false, "Interior_02");
+        // Generate first right eye cubemap
+        firstLeft = addLeftOrRightCubemapToScene(scene, true, DEFAULT_CUBEMAP_NAME);
+        // Generate first left eye cubemap
+        firstRight = addLeftOrRightCubemapToScene(scene, false, DEFAULT_CUBEMAP_NAME);
+
+        // Generate second right eye cubemap
+        secondLeft = addLeftOrRightCubemapToScene(scene, true, OTHER_CUBEMAP_NAME);
+        // Generate second left eye cubemap
+        secondRight = addLeftOrRightCubemapToScene(scene, false, OTHER_CUBEMAP_NAME);
+
+        // Hide the second cubemaps
+        secondLeft.getRenderData().setRenderMask(0);
+        secondRight.getRenderData().setRenderMask(0);
     }
 
-    private void addLeftOrRightCubemapToScene(GVRScene scene, boolean isRightEye, String cubemapName)
+    private GVRCubeSceneObject addLeftOrRightCubemapToScene(GVRScene scene, boolean isRightEye, String cubemapName)
     {
         GVRCubeSceneObject cube = new GVRCubeSceneObject(
                 mGVRContext, false, generateCubemapTexture(cubemapName, isRightEye));
@@ -83,6 +99,7 @@ public class VideoScript extends GVRScript
             cube.getChildByIndex(cubeFaceIndex).getRenderData().setRenderMask(renderMask);
         }
         scene.addSceneObject(cube);
+        return cube;
     }
 
     // Helper function to generate a cubemap texture from a name
@@ -117,7 +134,8 @@ public class VideoScript extends GVRScript
     }
 
     @Override
-    public void onStep() {
+    public void onStep()
+    {
         FPSCounter.tick();
     }
 }
