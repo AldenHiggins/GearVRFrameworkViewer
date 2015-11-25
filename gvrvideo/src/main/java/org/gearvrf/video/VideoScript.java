@@ -59,19 +59,37 @@ public class VideoScript extends GVRScript
 
         GVRScene scene = mGVRContext.getNextMainScene();
 
+        // Set the IPD to .065
+        scene.getMainCameraRig().setCameraSeparationDistance(.065f);
+
+        Log.v(TAG, "Camera Distance is: " + scene.getMainCameraRig().getCameraSeparationDistance());
+
         // ////////////////////////////////////////////////////////////
         //////////////// Generate the right eye cubemap ///////////////
         // ////////////////////////////////////////////////////////////
-        GVRCubeSceneObject mCubeEvironment = new GVRCubeSceneObject(
+        GVRCubeSceneObject rightEyeCube = new GVRCubeSceneObject(
                 gvrContext, false, generateCubemapTexture(gvrContext, "Interior_02", true));
-        mCubeEvironment.getTransform().setScale(CUBE_WIDTH, CUBE_WIDTH,
+        rightEyeCube.getTransform().setScale(CUBE_WIDTH, CUBE_WIDTH, CUBE_WIDTH);
+        // Add the render mask to all of the cube environment's children
+        for (int cubeFaceIndex = 0; cubeFaceIndex < rightEyeCube.getChildrenCount();cubeFaceIndex++)
+        {
+            rightEyeCube.getChildByIndex(cubeFaceIndex).getRenderData().setRenderMask(GVRRenderMaskBit.Left);
+        }
+        scene.addSceneObject(rightEyeCube);
+
+        // ////////////////////////////////////////////////////////////
+        //////////////// Generate the left eye cubemap ///////////////
+        // ////////////////////////////////////////////////////////////
+        GVRCubeSceneObject leftEyeCube = new GVRCubeSceneObject(
+                gvrContext, false, generateCubemapTexture(gvrContext, "Interior_02", false));
+        leftEyeCube.getTransform().setScale(CUBE_WIDTH, CUBE_WIDTH,
                 CUBE_WIDTH);
         // Add the render mask to all of the cube environment's children
-        for (int cubeFaceIndex = 0; cubeFaceIndex < mCubeEvironment.getChildrenCount();cubeFaceIndex++)
+        for (int cubeFaceIndex = 0; cubeFaceIndex < leftEyeCube.getChildrenCount();cubeFaceIndex++)
         {
-            mCubeEvironment.getChildByIndex(cubeFaceIndex).getRenderData().setRenderMask(GVRRenderMaskBit.Right);
+            leftEyeCube.getChildByIndex(cubeFaceIndex).getRenderData().setRenderMask(GVRRenderMaskBit.Right);
         }
-        scene.addSceneObject(mCubeEvironment);
+        scene.addSceneObject(leftEyeCube);
     }
 
 
