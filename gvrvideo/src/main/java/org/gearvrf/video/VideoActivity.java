@@ -43,17 +43,17 @@ public class VideoActivity extends GVRActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mScript = new VideoScript(this);
+        mScript = new VideoScript();
         mDetector = new VRTouchPadGestureDetector(this);
-        mBatteryReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context ctxt, Intent intent) {
-                int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
-                if (mScript != null) {
-                    mScript.setBatteryLevel(level);
-                }
-            }
-        };
+//        mBatteryReceiver = new BroadcastReceiver() {
+//            @Override
+//            public void onReceive(Context ctxt, Intent intent) {
+//                int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
+//                if (mScript != null) {
+//                    mScript.setBatteryLevel(level);
+//                }
+//            }
+//        };
         setScript(mScript, "gvr_note4.xml");
         registerReceiver(mBatteryReceiver, new IntentFilter(
                 Intent.ACTION_BATTERY_CHANGED));
@@ -62,14 +62,14 @@ public class VideoActivity extends GVRActivity implements
     @Override
     protected void onPause() {
         super.onPause();
-        mScript.onPause();
+//        mScript.onPause();
     }
 
     @Override
     public void onBackPressed() {
         if (System.currentTimeMillis() > mLatestButton + BUTTON_INTERVAL) {
             mLatestButton = System.currentTimeMillis();
-            mScript.onButtonDown();
+//            mScript.onButtonDown();
         }
     }
 
@@ -77,7 +77,7 @@ public class VideoActivity extends GVRActivity implements
     public boolean onKeyLongPress(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             mLatestButton = System.currentTimeMillis();
-            mScript.onLongButtonPress();
+//            mScript.onLongButtonPress();
         }
         return super.onKeyLongPress(keyCode, event);
     }
@@ -85,7 +85,7 @@ public class VideoActivity extends GVRActivity implements
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         mDetector.onTouchEvent(event);
-        mScript.onTouchEvent(event);
+//        mScript.onTouchEvent(event);
         return super.onTouchEvent(event);
     }
 
@@ -94,7 +94,7 @@ public class VideoActivity extends GVRActivity implements
         Log.v("", "onSingleTap");
         if (System.currentTimeMillis() > mLatestTap + TAP_INTERVAL) {
             mLatestTap = System.currentTimeMillis();
-            mScript.onSingleTap(e);
+//            mScript.onSingleTap(e);
         }
         return false;
     }
