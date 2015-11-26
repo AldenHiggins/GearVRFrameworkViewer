@@ -53,6 +53,9 @@ public class VideoScript extends GVRScript
     private static final String OTHER_CUBEMAP_NAME = "Interior_02";
     private GVRContext mGVRContext = null;
 
+    // Keep track of when the user taps the screen
+    private boolean isTapped;
+
     // Store the first and second cubemaps so they can be quickly switched when needed
     private GVRCubeSceneObject firstLeft;
     private GVRCubeSceneObject firstRight;
@@ -70,20 +73,21 @@ public class VideoScript extends GVRScript
         scene.getMainCameraRig().setCameraSeparationDistance(.065f);
 
         // Generate first right eye cubemap
-        firstLeft = addLeftOrRightCubemapToScene(scene, true, DEFAULT_CUBEMAP_NAME);
+        firstRight = addLeftOrRightCubemapToScene(scene, true, DEFAULT_CUBEMAP_NAME);
         // Generate first left eye cubemap
-        firstRight = addLeftOrRightCubemapToScene(scene, false, DEFAULT_CUBEMAP_NAME);
+        firstLeft = addLeftOrRightCubemapToScene(scene, false, DEFAULT_CUBEMAP_NAME);
 
         // Generate second right eye cubemap
-        secondLeft = addLeftOrRightCubemapToScene(scene, true, OTHER_CUBEMAP_NAME);
+        secondRight = addLeftOrRightCubemapToScene(scene, true, OTHER_CUBEMAP_NAME);
         // Generate second left eye cubemap
-        secondRight = addLeftOrRightCubemapToScene(scene, false, OTHER_CUBEMAP_NAME);
+        secondLeft = addLeftOrRightCubemapToScene(scene, false, OTHER_CUBEMAP_NAME);
 
         // Hide the second cubemaps
-        secondLeft.getRenderData().setRenderMask(0);
-        secondRight.getRenderData().setRenderMask(0);
+        setCubeRenderMasks(secondLeft, 0);
+        setCubeRenderMasks(secondRight, 0);
     }
 
+    // Helper function to add a new cubemap to the scene
     private GVRCubeSceneObject addLeftOrRightCubemapToScene(GVRScene scene, boolean isRightEye, String cubemapName)
     {
         GVRCubeSceneObject cube = new GVRCubeSceneObject(
@@ -92,12 +96,8 @@ public class VideoScript extends GVRScript
 
         // Set the rendermask correctly
         int renderMask = isRightEye ? GVRRenderMaskBit.Right : GVRRenderMaskBit.Left;
-
         // Add the render mask to all of the cube environment's children
-        for (int cubeFaceIndex = 0; cubeFaceIndex < cube.getChildrenCount();cubeFaceIndex++)
-        {
-            cube.getChildByIndex(cubeFaceIndex).getRenderData().setRenderMask(renderMask);
-        }
+        setCubeRenderMasks(cube, renderMask);
         scene.addSceneObject(cube);
         return cube;
     }
@@ -133,9 +133,49 @@ public class VideoScript extends GVRScript
         return cubemapTexture;
     }
 
+    // Helper functions to set the render mask of all six faces of a cube scene object
+    private void setCubeRenderMasks(GVRCubeSceneObject cube, int newRenderMask)
+    {
+        for (int cubeFaceIndex = 0; cubeFaceIndex < cube.getChildrenCount();cubeFaceIndex++)
+        {
+            cube.getChildByIndex(cubeFaceIndex).getRenderData().setRenderMask(newRenderMask);
+        }
+    }
+
+    // Callback function when the user taps the touchpad
+    public void onSingleTap(MotionEvent e)
+    {
+        Log.e(TAG, "Tap was recorded!!!");
+        isTapped = true;
+    }
+
     @Override
     public void onStep()
     {
         FPSCounter.tick();
+
+        // Check to see if the user has tapped the screen, if so switch the cubemaps
+        if (isTapped)
+        {
+            Log.e(TAG, "Got in here");
+            isTapped = false;
+
+            // Case where the second cubemap is being displayed
+            if (firstLeft.getChildByIndex(0).getRenderData().getRenderMask() == 0)
+            {
+                setCubeRenderMasks(firstLeft, GVRRenderMaskBit.Left);
+                setCubeRenderMasks(firstRight, GVRRenderMaskBit.Right);
+                setCubeRenderMasks(secondLeft, 0);
+                setCubeRenderMasks(secondRight, 0);
+            }
+            // Case where the first cubemap is being displayed
+            else
+            {
+                setCubeRenderMasks(secondLeft, GVRRenderMaskBit.Left);
+                setCubeRenderMasks(secondRight, GVRRenderMaskBit.Right);
+                setCubeRenderMasks(firstLeft, 0);
+                setCubeRenderMasks(firstRight, 0);
+            }
+        }
     }
 }

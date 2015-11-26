@@ -94,7 +94,7 @@ public class VideoActivity extends GVRActivity implements
         Log.v("", "onSingleTap");
         if (System.currentTimeMillis() > mLatestTap + TAP_INTERVAL) {
             mLatestTap = System.currentTimeMillis();
-//            mScript.onSingleTap(e);
+            mScript.onSingleTap(e);
         }
         return false;
     }
